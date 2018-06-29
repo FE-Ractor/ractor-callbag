@@ -5,3 +5,4 @@ _test/
 .vscode/
 tsconfig.json
 .DS_Store
+demo/

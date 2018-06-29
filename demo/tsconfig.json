@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "jsx": "react",
+    "target": "es6",
+    "skipLibCheck": true,
+    // "lib": [
+      
+    // ]
+  }
+}

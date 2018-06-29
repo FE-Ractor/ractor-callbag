@@ -4,3 +4,4 @@ _test
 .DS_Store
 *.js
 dist/
+.cache
