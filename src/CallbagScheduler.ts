@@ -3,10 +3,10 @@ import { Source, START, DATA, END, Callbag, Sink } from "callbag"
 import { CallbagReceive } from "./CallbagReceive"
 import { CallbagStore } from "./CallbagStore"
 import { System } from "ractor"
+import { Listener } from "."
 
 
 export type Signal = START | DATA | END
-export type Epic<T = object> = { message: new (...args: any[]) => T, source: Source<T> }
 
 export class CallbagScheduler implements IActorScheduler {
   private handlers: Array<(messageInc: object) => void> = []
@@ -14,14 +14,9 @@ export class CallbagScheduler implements IActorScheduler {
   constructor(
     private system: System,
     private event: string,
-    private receive: CallbagReceive,
+    private listeners: Listener[],
     private owner: CallbagStore<any>
-  ) {
-    this.receive.listeners.forEach(listener => {
-      const epic$ = listener.callback(this.ofMessage(listener.message))
-      epic$(0, this.sink$)
-    })
-  }
+  ) { }
 
   public callback = (messageInc: Object) => {
     try {
@@ -33,6 +28,7 @@ export class CallbagScheduler implements IActorScheduler {
 
   public cancel() {
     this.system.eventStream.removeListener(this.event, this.callback)
+    this.handlers.length = 0
     return true
   }
 
@@ -51,10 +47,12 @@ export class CallbagScheduler implements IActorScheduler {
 
   public start() {
     this.system.eventStream.addListener(this.event, this.callback)
+    this.mapListenerToCallbag(this.listeners)
   }
 
-  public replaceListeners() {
-
+  public replaceListeners(listeners: Listener[]) {
+    this.listeners = listeners
+    this.mapListenerToCallbag(this.listeners)
   }
 
   public ofMessage = (message: Message<object>): Source<object> => (type: Signal, sink: any) => {
@@ -73,9 +71,15 @@ export class CallbagScheduler implements IActorScheduler {
     }
   }
 
-  public sink$ = (t: Signal, d: any) => {
-    if (t === 1) {
-      this.owner.setState(d)
-    }
+  public mapListenerToCallbag(listeners: Listener[]) {
+    listeners.forEach(listener => {
+      const epic$ = listener.callback(this.ofMessage(listener.message))
+      epic$(0, (t: Signal, d: any) => {
+        if (t === 1) {
+          this.owner.setState(d)
+        }
+      })
+    })
   }
+
 }

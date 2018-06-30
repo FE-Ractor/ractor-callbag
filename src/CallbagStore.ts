@@ -13,7 +13,7 @@ export abstract class CallbagStore<S> extends Store<S> {
 
   public receive() {
     const receive = this.createReceive()
-    this.context.scheduler = new CallbagScheduler(this.context.system, this.context.name, receive, this)
+    this.context.scheduler = new CallbagScheduler(this.context.system, this.context.name, receive.listeners, this)
     this.context.scheduler.start()
     this.preStart()
   }
