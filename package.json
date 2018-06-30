@@ -1,6 +1,6 @@
 {
   "name": "ractor-callbag",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Callbag middleware for Ractor",
   "main": "dist/index.js",
   "scripts": {
