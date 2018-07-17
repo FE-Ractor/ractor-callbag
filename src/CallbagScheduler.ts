@@ -1,6 +1,5 @@
-import { AbstractActor, IActorScheduler, Message } from "js-actor"
-import { Source, START, DATA, END, Callbag, Sink } from "callbag"
-import { CallbagReceive } from "./CallbagReceive"
+import { IActorScheduler, Message } from "js-actor"
+import { Source, START, DATA, END } from "callbag"
 import { CallbagStore } from "./CallbagStore"
 import { System } from "ractor"
 import { Listener } from "."
@@ -9,7 +8,7 @@ import { Listener } from "."
 export type Signal = START | DATA | END
 
 export class CallbagScheduler implements IActorScheduler {
-  private handlers: Array<(messageInc: object) => void> = []
+  private handlers: Array<(messageInc?: object) => void> = []
 
   constructor(
     private system: System,
@@ -28,6 +27,7 @@ export class CallbagScheduler implements IActorScheduler {
 
   public cancel() {
     this.system.eventStream.removeListener(this.event, this.callback)
+    this.handlers.forEach(handler => handler())
     this.handlers.length = 0
     return true
   }
@@ -52,14 +52,17 @@ export class CallbagScheduler implements IActorScheduler {
 
   public replaceListeners(listeners: Listener[]) {
     this.listeners = listeners
-    this.mapListenerToCallbag(this.listeners)
   }
 
   public ofMessage = (message: Message<object>): Source<object> => (type: Signal, sink: any) => {
     if (type === 0) {
-      const handler = (messageInc: object) => {
-        if (messageInc instanceof message) {
-          sink(1, messageInc)
+      const handler = (messageInc?: object) => {
+        if (messageInc) {
+          if (messageInc instanceof message) {
+            sink(1, messageInc)
+          }
+        } else {
+          sink(2)
         }
       }
       this.handlers.push(handler)
