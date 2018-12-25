@@ -8,7 +8,7 @@ class Increment {
 }
 
 test("test callbag", t => {
-  t.plan(1)
+  t.plan(2)
   const system = new System("test")
 
   class CounterStore extends CallbagStore<{ value: number }> {
@@ -20,7 +20,7 @@ test("test callbag", t => {
     }
   }
   const counterStore = new CounterStore
-  const counterStoreRef = system.actorOf(counterStore)
+  system.actorOf(counterStore)
   system.dispatch(new Increment(3))
 
   // 3 + 1

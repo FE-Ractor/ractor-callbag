@@ -50,6 +50,10 @@ export class CallbagScheduler implements IActorScheduler {
     this.mapListenerToCallbag(this.listeners)
   }
 
+  public getListeners() {
+    return this.listeners
+  }
+
   public replaceListeners(listeners: Listener[]) {
     this.listeners = listeners
   }
