@@ -1,6 +1,6 @@
 {
   "name": "ractor-callbag",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Callbag middleware for Ractor",
   "main": "dist/index.js",
   "scripts": {
@@ -9,7 +9,7 @@
     "clean_test": "rm -fr _test",
     "test_ava": "ava _test/test/",
     "test": "npm-run-all build_test test_ava clean_test",
-    "prepublish": "npm run build"
+    "prepublish": "npm-run-all test build"
   },
   "author": "huangbinjie",
   "license": "MIT",

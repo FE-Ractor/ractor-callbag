@@ -4,6 +4,10 @@ import { CallbagReceive } from "./CallbagReceive"
 import { Listener } from "./Listener"
 
 export class CallbagReceiveBuilder implements IActorReceiveBuilder {
+  public static create() {
+    return new CallbagReceiveBuilder
+  }
+  
   private listeners: Listener[] = []
 
   public match<T extends object>(message: Message<T>, callback: (obj: Source<object>) => Source<object>) {
