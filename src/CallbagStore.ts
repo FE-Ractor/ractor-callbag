@@ -11,7 +11,7 @@ export interface StoreContext extends IActorContext {
 export abstract class CallbagStore<S> implements IActor {
   private listeners: Array<Listener<S> | Observer<S>> = []
   public abstract createReceive(): CallbagReceive
-  public state: any
+  public state: S
   public context!: StoreContext
 
   public receiveBuilder() {
@@ -64,32 +64,7 @@ export abstract class CallbagStore<S> implements IActor {
     }
   }
 
-	/**
-	 * setState is sync.
-	 *
-	 * @param nextState 
-	 */
-  public setState(nextState: Partial<S>) {
-    if (typeof nextState === "object") {
-      if (typeof this.state === "object") {
-        this.state = Object.assign({}, this.state, nextState)
-      } else {
-        this.state = nextState
-      }
-    } else {
-      throw TypeError("takes an object of state variables to update.")
-    }
-
-    for (let listener of this.listeners) {
-      if (typeof listener === "function") {
-        listener(this.state)
-      } else {
-        listener.next(this.state)
-      }
-    }
-  }
-
-  public replaceState(nextState: any) {
+  public setState(nextState: S) {
     this.state = nextState
     for (let listener of this.listeners) {
       if (typeof listener === "function") {
